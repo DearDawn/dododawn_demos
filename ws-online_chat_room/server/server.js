@@ -43,7 +43,7 @@ const closeConn = (client) => {
     }, client)
 
     sendToAll({
-        type: 'online',
+        type: 'people',
         data: {
             info: clients.map(c => c.profile)
         }
