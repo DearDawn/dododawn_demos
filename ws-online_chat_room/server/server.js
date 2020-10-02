@@ -1,4 +1,5 @@
-const WebSocket = require('ws')
+const WebSocket = require('ws');
+const writeLog = require('./write-log');
 
 const wss = new WebSocket.Server({
     port: 7777
@@ -7,12 +8,13 @@ const wss = new WebSocket.Server({
 // 连接的客户端集合
 const clients = []
 // 最大允许连接数量
-const MAX_CONNS = 2
+const MAX_CONNS = 10
 // ClientInfo构造函数
 const ClientInfo = function () {
     this.profile = {
-        name: '路人',
-        avator: ''
+        name: '无名氏',
+        avator: '',
+        color: '#114477'
     }
     this.conn = null
 }
@@ -20,12 +22,12 @@ const ClientInfo = function () {
 // 最近缓存的条消息
 const mesHistory = []
 // 最大允许缓存消息数量
-const MAX_HISTORY = 5
+const MAX_HISTORY = 100
 
 // 发送消息到所有的客户端
-const sendToAll = (message) => {
+const sendToAll = (message, which) => {
     clients.forEach(client => {
-        client.conn.send(message)
+        client.conn.send(JSON.stringify({ me: which === client, ...message }))
     })
 }
 
@@ -33,12 +35,19 @@ const sendToAll = (message) => {
 const closeConn = (client) => {
     // 从集合中删除该客户端
     clients.splice(clients.indexOf(client), 1)
-    sendToAll(JSON.stringify({
+    sendToAll({
         type: 'quit',
         data: {
             info: client.profile
         }
-    }))
+    }, client)
+
+    sendToAll({
+        type: 'online',
+        data: {
+            info: clients.map(c => c.profile)
+        }
+    }, client)
 }
 
 // 接收到客户端发来的消息
@@ -49,13 +58,21 @@ const receiveMes = (client, message) => {
         case 'login':
             client.profile.name = Rec.data.name || '无名氏'
             client.profile.avator = Rec.data.avator || ''
-            sendToAll(JSON.stringify({
+            client.profile.color = Rec.data.color || ''
+            sendToAll({
                 type: 'login',
                 data: {
                     info: client.profile
                 }
-            }))
-            
+            }, client)
+
+            sendToAll({
+                type: 'people',
+                data: {
+                    info: clients.map(c => c.profile)
+                }
+            }, client)
+
             // 如果有历史消息，就推送给他
             if (mesHistory.length > 0) {
                 mesHistory.forEach(data => {
@@ -65,6 +82,7 @@ const receiveMes = (client, message) => {
 
             break;
 
+        // 聊天
         case 'chat':
             const text = Rec.data.message
             const dataStr = {
@@ -75,14 +93,17 @@ const receiveMes = (client, message) => {
                     date: new Date().getTime()
                 }
             }
-            sendToAll(JSON.stringify(dataStr))
+            sendToAll(dataStr, client)
 
             mesHistory.push(dataStr)
+
+            // 记录日志
+            writeLog(dataStr)
+
             if (mesHistory.length > MAX_HISTORY) {
                 mesHistory.shift()
             }
             break
-
         default:
             break;
     }
@@ -101,7 +122,7 @@ wss.on('connection', function (ws) {
     const client = new ClientInfo()
     client.conn = ws
     clients.push(client)
-    console.log(`客户端已连接，当前连接总数：${clients.length}`);
+    // console.log(`客户端已连接，当前连接总数：${clients.length}`);
 
     // 收到当前客户端发来的消息
     ws.on('message', (mes) => receiveMes(client, mes))

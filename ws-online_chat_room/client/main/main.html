@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>webSocket 在线聊天室</title>
+    <link rel="stylesheet" href="./main.css" />
+  </head>
+  <body>
+    
+    <h2>webSocket 在线聊天室</h2>
+    <div class="me">我的信息：<span id="my-info"></span></div>
+    <div class="wrapper">
+      <div id="left">
+        <div class="title">当前在线</div>
+      </div>
+      <div class="center">
+        <div id="chat-window"></div>
+        <div class="send-box">
+          <textarea id="message" placeholder="输入要发送的内容..."></textarea>
+          <div id="send-btn">发送</div>
+        </div>
+      </div>
+    </div>
+
+    <script src="./main.js"></script>
+  </body>
+</html>
