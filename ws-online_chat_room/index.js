@@ -1,3 +1,3 @@
-const ws = require('ws').Server
+const ws = require('ws')
 
 
