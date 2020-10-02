@@ -1,0 +1,212 @@
+html,
+body {
+  margin: 0;
+  padding: 0;
+  background: #f5f5f5;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+h2 {
+  margin: 0;
+  padding: 0;
+}
+
+.wrapper {
+  width: 700px;
+  height: 500px;
+  background-color: #f5f5f5;
+  box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.5);
+  display: flex;
+}
+
+.wrapper #left {
+  width: 200px;
+  height: 100%;
+  background-color: #222;
+  color: white;
+  flex: none;
+}
+
+.wrapper .center {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.wrapper .center #chat-window {
+  height: 350px;
+  width: 100%;
+  flex: none;
+  overflow: auto;
+  padding-bottom: 10px;
+}
+
+.wrapper .center .send-box {
+  flex: 1;
+  background-color: #fff;
+  border-top: 1px solid #eee;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+}
+
+.wrapper .center .send-box textarea {
+  font-size: 16px;
+  width: 100%;
+  flex: 1;
+  box-sizing: border-box;
+  border: none;
+  resize: none;
+  outline: none;
+  padding: 10px 10px 30px 10px;
+}
+
+.me {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+#my-info {
+  padding: 0px 10px;
+}
+
+#send-btn {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  background-color: green;
+  color: #fff;
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+#send-btn:hover {
+  color: #eee;
+  background-color: rgb(0, 108, 0);
+}
+
+#send-btn:active {
+  color: #ddd;
+  background-color: rgb(0, 88, 0);
+}
+
+#left {
+  position: relative;
+  padding-top: 30px;
+  overflow: auto;
+  box-sizing: border-box;
+}
+
+#left .title {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 20px;
+  padding: 5px 0;
+  text-align: center;
+}
+
+#left .info-box {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  margin-bottom: 10px;
+  background-color: #999;
+  padding: 10px;
+  box-sizing: border-box;
+  margin: 1px 0px;
+}
+
+#left .info-avator {
+  height: 40px;
+  width: 40px;
+  border-radius: 5px;
+  background-color: lightpink;
+  flex: none;
+  margin: 0 10px 0 0;
+}
+
+#left .info-name {
+  margin-left: 10px;
+  font-size: 20px;
+} 
+
+.other,
+.mine {
+  display: flex;
+  align-items: flex-start;
+  margin-top: 10px;
+  padding: 0 10px;
+}
+
+.mine {
+  flex-direction: row-reverse;
+}
+
+.avator {
+  height: 40px;
+  width: 40px;
+  border-radius: 5px;
+  background-color: lightpink;
+  flex: none;
+  margin: 0 10px 0 0;
+}
+
+.message-box {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.message-box .name-date {
+  font-size: 12px;
+  color: gray;
+  margin-bottom: 5px;
+}
+
+.message-box .name-date .name{
+  margin-right: 5px;
+}
+
+.message-box .text {
+  max-width: 350px;
+  min-width: 100px;
+  width: fit-content;
+  background-color: #fff;
+  box-shadow: 0px 0px 2px rgba(0, 0, 0, 0.5);
+  box-sizing: border-box;
+  padding: 5px 10px;
+  border-radius: 5px;
+}
+
+.mine .message-box {
+  text-align: right;
+  align-items: flex-end;
+}
+
+.mine .avator {
+  margin: 0 0 0 10px;
+}
+
+.tip-box {
+  text-align: center;
+  width: 100%;
+  margin-top: 10px;
+}
+
+.tip-box .tip {
+  font-size: 12px;
+  background-color: #ccc;
+  color: #fff;
+  padding: 0 5px;
+  width: fit-content;
+  margin: auto;
+  border-radius: 2px;
+}
