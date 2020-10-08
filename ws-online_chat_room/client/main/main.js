@@ -8,6 +8,7 @@ const DOM = {
 
 // 建立 webSocket 连接
 const ws = new WebSocket("ws://localhost:7777");
+// const ws = new WebSocket("ws://www.dododawn.com:7777");
 
 // 页面关闭时自动断开连接
 window.onbeforeunload = () => {
@@ -21,6 +22,19 @@ ws.onclose = (event) => {
 
 // 连接建立
 ws.onopen = () => {
+    // 解析登录参数
+    const qs = new URLSearchParams(window.location.search)
+    const name = qs.get('name')
+    const color = qs.get('color')
+
+    // 参数缺失，重定向到登录页
+    if (!name || !color) {
+        window.location.href = '../login/login.html'
+        return
+    }
+
+    // 登录
+    login(name, color)
     console.log('连接成功');
 }
 
@@ -84,22 +98,6 @@ function send(message) {
     }))
 }
 
-window.onload = () => {
-    // 解析登录参数
-    const qs = new URLSearchParams(window.location.search)
-    const name = qs.get('name')
-    const color = qs.get('color')
-
-    // 参数缺失，重定向到登录页
-    if (!name || !color) {
-        window.location.href = '../login/login.html'
-        return
-    }
-
-    // 登录
-    login(name, color)
-}
-
 function handleLogin(resData, isMe) {
     let card = null
 
@@ -129,7 +127,7 @@ function handleChat(resData, isMe) {
     const message = resData.message
 
 
-    const dateStr = date.getHours() + ':' + date.getMinutes()
+    const dateStr = dateFormat(date,'mm-dd HH:MM:SS')
 
     const card = initChatCard(
         decodeURIComponent(info.name),
@@ -147,7 +145,9 @@ function handleChat(resData, isMe) {
         DOM.chatWindow.appendChild(card)
     }
 
-    card.scrollIntoView({ behavior: 'smooth' })
+    setTimeout(() => {
+        card.scrollIntoView({ behavior: 'smooth' })
+    }, 300);
 }
 
 function handleQuit(resData, isMe) {
@@ -236,3 +236,29 @@ function initInfoCard(name, color) {
         `<div class="info-name">${name}</div>`
     return card
 }
+
+// 时间格式化
+function dateFormat(dateStr, format) {
+    const timeOBJ = new Date(Number(dateStr));
+    let formatStr = format;
+    let ret;
+    const opt = {
+        'Y+': timeOBJ.getFullYear().toString(), // 年
+        'm+': (timeOBJ.getMonth() + 1).toString(), // 月
+        'd+': timeOBJ.getDate().toString(), // 日
+        'H+': timeOBJ.getHours().toString(), // 时
+        'M+': timeOBJ.getMinutes().toString(), // 分
+        'S+': timeOBJ.getSeconds().toString(), // 秒
+        // 有其他格式化字符需求可以继续添加，必须转化成字符串
+    };
+    for (const k in opt) {
+        ret = new RegExp('(' + k + ')').exec(formatStr);
+        if (ret) {
+            const matchStr = ret[1];
+            const replaceStr =
+                matchStr.length === 1 ? opt[k] : opt[k].padStart(matchStr.length, '0');
+            formatStr = formatStr.replace(matchStr, replaceStr);
+        }
+    }
+    return formatStr;
+};
