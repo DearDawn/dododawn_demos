@@ -8,6 +8,7 @@ const DOM = {
 
 // 建立 webSocket 连接
 const ws = new WebSocket("ws://localhost:7777");
+// const ws = new WebSocket("ws://www.dododawn.com:7777");
 
 // 页面关闭时自动断开连接
 window.onbeforeunload = () => {
@@ -144,7 +145,9 @@ function handleChat(resData, isMe) {
         DOM.chatWindow.appendChild(card)
     }
 
-    card.scrollIntoView({ behavior: 'smooth' })
+    setTimeout(() => {
+        card.scrollIntoView({ behavior: 'smooth' })
+    }, 300);
 }
 
 function handleQuit(resData, isMe) {
