@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图片上传 & 压缩</title>
+  </head>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #main {
+      background-color: red;
+      width: 500px;
+      height: 300px;
+    }
+    #img-box {
+      width: 700px;
+      display: flex;
+      flex-wrap: wrap;
+      overflow: auto;
+    }
+    .show {
+      height: 100px;
+      margin: 10px;
+    }
+  </style>
+  <body draggable="true">
+    <div id="main" draggable="true"></div>
+    <input
+      type="file"
+      name="test"
+      id="upload"
+      multiple
+      accept=".png,.jpg,.jepg"
+      style="display: none"
+    />
+    <div id="img-box"></div>
+    <button id="submit">提交</button>
+    <script>
+      let imgBox = null;
+      let x = null;
+      let srcs = [];
+      window.onload = () => {
+        const upload = document.querySelector('#upload');
+        const main = document.querySelector('#main');
+        const submit = document.querySelector('#submit');
+        imgBox = document.querySelector('#img-box');
+
+        document.addEventListener('paste', function (event) {
+          const files = [];
+          [].forEach.call(
+            event.clipboardData.files,
+            function (file, index) {
+              changepic(file, index);
+            },
+            false
+          );
+          [].forEach.call(
+            event.clipboardData.items,
+            function (item, index) {
+              x = item;
+              // 控制台执行不好使
+              item.getAsString((a) => {
+                checkImgExists(a).then((res) => {
+                  if (res) {
+                    const fileTemp = dataURLtoFile(res, a);
+                    changepic(fileTemp);
+                    console.log(res, 'res');
+                    console.log(fileTemp);
+                  }
+                });
+              });
+            },
+            false
+          );
+        });
+        document.addEventListener('dragover', function (event) {
+          event.preventDefault();
+        });
+        document.addEventListener('drop', function (event) {
+          event.preventDefault();
+          var files = [];
+          [].forEach.call(
+            event.dataTransfer.files,
+            function (file, index) {
+              changepic(file, index);
+            },
+            false
+          );
+        });
+        main.addEventListener('click', function (event) {
+          upload.click();
+        });
+        document.querySelector('#upload').addEventListener('change', (e) => {
+          [].forEach.call(e.target.files, (item, index) => {
+            changepic(item, index);
+          });
+        });
+        submit.addEventListener('click', (e) => {
+          const fd = new FormData();
+          console.log(1233);
+          srcs.forEach((item) => {
+            fd.append('test', item);
+          });
+          window
+            .fetch('/upload/img', { method: 'post', body: fd })
+            .then((res) => {
+              console.log(res);
+            });
+        });
+      };
+      function changepic(file) {
+        var newsrc = getObjectURL(file);
+        console.log(newsrc);
+        const imgDom = document.createElement('img');
+        imgDom.className = 'show';
+        imgDom.src = newsrc;
+        srcs.push(file);
+        imgBox.appendChild(imgDom);
+      }
+
+      //建立一個可存取到該file的url
+      function getObjectURL(file) {
+        console.log(12333, file);
+        var url = null;
+        // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+        if (window.createObjectURL != undefined) {
+          // basic
+          url = window.createObjectURL(file);
+        } else if (window.URL != undefined) {
+          // mozilla(firefox)
+          url = window.URL.createObjectURL(file);
+        } else if (window.webkitURL != undefined) {
+          // webkit or chrome
+          url = window.webkitURL.createObjectURL(file);
+        }
+        return url;
+      }
+
+      function checkImgExists(imgurl) {
+        return new Promise(function (resolve) {
+          var ImgObj = new Image();
+          // ImgObj.crossOrigin = 'anonymous';
+          ImgObj.src = imgurl;
+          document.body.append(ImgObj);
+          ImgObj.onload = () => {
+            let canvas = document.createElement('canvas');
+            let ctx = canvas.getContext('2d');
+            canvas.height = ImgObj.height;
+            canvas.width = ImgObj.width;
+            ctx.drawImage(ImgObj, 0, 0);
+            // let dataURL = canvas.toDataURL('image/png', 1);
+            // console.log(dataURL,'dataUrl');
+            window
+              .fetch(imgurl, { method: 'get' })
+              .then((res) => {
+                console.log(1233333321321321312);
+                console.log(12333333, res);
+              });
+            // resolve(dataURL);
+            resolve('');
+          };
+          ImgObj.onerror = (err) => {
+            console.log(err, 'err');
+            resolve(false);
+          };
+        });
+      }
+
+      function dataURLtoFile(dataurl, filename) {
+        //将base64转换为文件
+        if (!dataurl) {
+          return null;
+        }
+        let arr = dataurl.split(',');
+        let mime = arr[0].match(/:(.*?);/)[1];
+        let bstr = atob(arr[1]);
+        let n = bstr.length;
+        let u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+      }
+    </script>
+  </body>
+</html>
