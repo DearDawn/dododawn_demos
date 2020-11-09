@@ -13,9 +13,25 @@
       align-items: center;
     }
     #main {
-      background-color: red;
+      background-color: #fff;
       width: 500px;
       height: 300px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      flex-direction: column;
+    }
+
+    #main .tip {
+      font-size: 20px;
+      color: #777;
+    }
+    #main:hover {
+      background-color: #f5f5f5;
+      box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
     }
     #img-box {
       width: 700px;
@@ -26,10 +42,20 @@
     .show {
       height: 100px;
       margin: 10px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    }
+    #submit {
+      width: 100px;
+      height: 50px;
+      margin: 20px;
+      font-size: 20px;
     }
   </style>
   <body draggable="true">
-    <div id="main" draggable="true"></div>
+    <div id="main" draggable="true">
+      <div>添加文件</div>
+      <div class="tip">（拖拽 / 粘贴 / 点击）</div>
+    </div>
     <input
       type="file"
       name="test"
@@ -38,12 +64,13 @@
       accept=".png,.jpg,.jepg"
       style="display: none"
     />
-    <div id="img-box"></div>
     <button id="submit">提交</button>
+    <div id="img-box"></div>
     <script>
       let imgBox = null;
       let x = null;
       let srcs = [];
+      let urls = [];
       window.onload = () => {
         const upload = document.querySelector('#upload');
         const main = document.querySelector('#main');
@@ -67,10 +94,11 @@
               item.getAsString((a) => {
                 checkImgExists(a).then((res) => {
                   if (res) {
-                    const fileTemp = dataURLtoFile(res, a);
-                    changepic(fileTemp);
-                    console.log(res, 'res');
-                    console.log(fileTemp);
+                    if (/^http/.test(res)) {
+                      changepic(res, true);
+                    } else {
+                      changepic(dataURLtoFile(res, a));
+                    }
                   }
                 });
               });
@@ -86,8 +114,8 @@
           var files = [];
           [].forEach.call(
             event.dataTransfer.files,
-            function (file, index) {
-              changepic(file, index);
+            function (file) {
+              changepic(file);
             },
             false
           );
@@ -96,36 +124,53 @@
           upload.click();
         });
         document.querySelector('#upload').addEventListener('change', (e) => {
-          [].forEach.call(e.target.files, (item, index) => {
-            changepic(item, index);
+          [].forEach.call(e.target.files, (item) => {
+            changepic(item);
           });
         });
         submit.addEventListener('click', (e) => {
           const fd = new FormData();
-          console.log(1233);
           srcs.forEach((item) => {
-            fd.append('test', item);
+            fd.append('files', item);
+          });
+          urls.forEach((item) => {
+            fd.append('urls', item);
           });
           window
             .fetch('/upload/img', { method: 'post', body: fd })
+            .then((res) => res.json())
             .then((res) => {
               console.log(res);
+              if (res.status === 0) {
+                alert('上传成功');
+                srcs = [];
+                urls = [];
+                imgBox.innerHTML = '';
+              } else {
+                alert(res.msg);
+              }
             });
         });
       };
-      function changepic(file) {
-        var newsrc = getObjectURL(file);
-        console.log(newsrc);
+
+      // 存储数据，为接口发送做准备
+      function changepic(file, isFromUrl) {
+        let newsrc = '';
+        if (!isFromUrl) {
+          newsrc = getObjectURL(file);
+          srcs.push(file);
+        } else {
+          newsrc = file;
+          urls.push(newsrc);
+        }
         const imgDom = document.createElement('img');
         imgDom.className = 'show';
         imgDom.src = newsrc;
-        srcs.push(file);
         imgBox.appendChild(imgDom);
       }
 
       //建立一個可存取到該file的url
       function getObjectURL(file) {
-        console.log(12333, file);
         var url = null;
         // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
         if (window.createObjectURL != undefined) {
@@ -141,28 +186,13 @@
         return url;
       }
 
+      // 校验图片是否存在
       function checkImgExists(imgurl) {
         return new Promise(function (resolve) {
           var ImgObj = new Image();
-          // ImgObj.crossOrigin = 'anonymous';
           ImgObj.src = imgurl;
-          document.body.append(ImgObj);
           ImgObj.onload = () => {
-            let canvas = document.createElement('canvas');
-            let ctx = canvas.getContext('2d');
-            canvas.height = ImgObj.height;
-            canvas.width = ImgObj.width;
-            ctx.drawImage(ImgObj, 0, 0);
-            // let dataURL = canvas.toDataURL('image/png', 1);
-            // console.log(dataURL,'dataUrl');
-            window
-              .fetch(imgurl, { method: 'get' })
-              .then((res) => {
-                console.log(1233333321321321312);
-                console.log(12333333, res);
-              });
-            // resolve(dataURL);
-            resolve('');
+            resolve(imgurl);
           };
           ImgObj.onerror = (err) => {
             console.log(err, 'err');
@@ -171,8 +201,8 @@
         });
       }
 
+      // 将base64转换为文件
       function dataURLtoFile(dataurl, filename) {
-        //将base64转换为文件
         if (!dataurl) {
           return null;
         }
