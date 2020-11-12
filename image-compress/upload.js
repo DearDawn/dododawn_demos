@@ -23,12 +23,9 @@ router.post('/img', upload.array('files'), (req, res) => {
                 if (err) { return resolve('上传失败') }
                 let time = Date.now() + '-' + parseInt(Math.random() * 10000);
                 let extname = file.mimetype.split('/')[1]
-                let keepname = file.filename + '-' + time + '.' + extname
-                const finalPath = path.join(__dirname, '../static/img/' + keepname)
-                //三个参数
-                //1.图片的绝对路径
-                //2.写入的内容
-                //3.回调函数
+                let keepName = file.filename + '-' + time + '.' + extname
+                const finalPath = path.join(__dirname, '../static/img/' + keepName)
+
                 fs.writeFile(finalPath, data, (err) => {
                     if (err) { return resolve('写入失败') }
                     fs.rm(file.path, (err) => {
@@ -39,13 +36,12 @@ router.post('/img', upload.array('files'), (req, res) => {
                     // 压缩图片
                     compress(finalPath).then(r => {
                         if (r) {
-                            pathArr.origin.push(req.headers.host + '/img/' + keepname)
-                            pathArr.compress.push(req.headers.host + '/img-compress/' + keepname)
+                            pathArr.origin.push(req.headers.host + '/img/' + keepName)
+                            pathArr.compress.push(req.headers.host + '/img-compress/' + keepName)
                             resolve(true)
                         }
                         resolve(false)
                     })
-
                 });
             }))
         })
@@ -57,14 +53,15 @@ router.post('/img', upload.array('files'), (req, res) => {
             return new Promise((resolve) => {
                 downloadFromUrl(url).then(res => {
                     if (!res) { return resolve(false) }
+                    const imgUrl = res.finalPath
 
-                    fs.readFile(res.finalPath, (err, data) => {
+                    fs.readFile(imgUrl, (err, data) => {
                         if (err) { return resolve('上传失败') }
                         const finalPath = path.join(__dirname, '../static/img/' + res.keepName)
 
                         fs.writeFile(finalPath, data, (err) => {
                             if (err) { return resolve('写入失败') }
-                            fs.rm(res.finalPath, (err) => {
+                            fs.rm(imgUrl, (err) => {
                                 if (err) {
                                     return resolve('删除失败');
                                 }
@@ -74,7 +71,7 @@ router.post('/img', upload.array('files'), (req, res) => {
                                 if (r) {
                                     pathArr.origin.push(req.headers.host + '/img/' + res.keepName)
                                     pathArr.compress.push(req.headers.host + '/img-compress/' + res.keepName)
-                                    resolve(true)
+                                    return resolve(true)
                                 }
                                 resolve(false)
                             })

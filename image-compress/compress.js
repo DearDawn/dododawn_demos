@@ -4,7 +4,7 @@ const imageminPngquant = require('imagemin-pngquant');
 
 async function compress(filePath) {
 	try {
-		await imagemin([filePath], {
+		await imagemin([filePath.replace(/\\/g, '/')], {
 			destination: '../static/img-compress/',
 			plugins: [
 				imageminJpegtran(),
