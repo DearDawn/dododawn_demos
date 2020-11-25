@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>图片上传 & 压缩</title>
+  </head>
+  <style>
+    body {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+    #main {
+      background-color: #fff;
+      width: 500px;
+      height: 300px;
+      border-radius: 10px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      flex-direction: column;
+    }
+
+    #main .tip {
+      font-size: 20px;
+      color: #777;
+    }
+    #main:hover {
+      background-color: #f5f5f5;
+      box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    }
+    #img-box {
+      width: 700px;
+      display: flex;
+      flex-wrap: wrap;
+      overflow: auto;
+    }
+    .show {
+      height: 100px;
+      margin: 10px;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    }
+    #submit {
+      width: 100px;
+      height: 50px;
+      margin: 20px;
+      font-size: 20px;
+    }
+  </style>
+  <body draggable="true">
+    <div id="main" draggable="true">
+      <div>添加文件</div>
+      <div class="tip">（拖拽 / 粘贴 / 点击）</div>
+    </div>
+    <input
+      type="file"
+      name="test"
+      id="upload"
+      multiple
+      accept=".png,.jpg,.jepg"
+      style="display: none"
+    />
+    <button id="submit">提交</button>
+    <div id="img-box"></div>
+    <script>
+      let imgBox = null;
+      let x = null;
+      let srcs = [];
+      let urls = [];
+      window.onload = () => {
+        const upload = document.querySelector('#upload');
+        const main = document.querySelector('#main');
+        const submit = document.querySelector('#submit');
+        imgBox = document.querySelector('#img-box');
+
+        document.addEventListener('paste', function (event) {
+          const files = [];
+          [].forEach.call(
+            event.clipboardData.files,
+            function (file, index) {
+              changepic(file, index);
+            },
+            false
+          );
+          [].forEach.call(
+            event.clipboardData.items,
+            function (item, index) {
+              x = item;
+              // 控制台执行不好使
+              item.getAsString((a) => {
+                checkImgExists(a).then((res) => {
+                  if (res) {
+                    if (/^http/.test(res)) {
+                      changepic(res, true);
+                    } else {
+                      changepic(dataURLtoFile(res, a));
+                    }
+                  }
+                });
+              });
+            },
+            false
+          );
+        });
+        document.addEventListener('dragover', function (event) {
+          event.preventDefault();
+        });
+        document.addEventListener('drop', function (event) {
+          event.preventDefault();
+          var files = [];
+          [].forEach.call(
+            event.dataTransfer.files,
+            function (file) {
+              changepic(file);
+            },
+            false
+          );
+        });
+        main.addEventListener('click', function (event) {
+          upload.click();
+        });
+        document.querySelector('#upload').addEventListener('change', (e) => {
+          [].forEach.call(e.target.files, (item) => {
+            changepic(item);
+          });
+        });
+        submit.addEventListener('click', (e) => {
+          const fd = new FormData();
+          srcs.forEach((item) => {
+            fd.append('files', item);
+          });
+          urls.forEach((item) => {
+            fd.append('urls', item);
+          });
+          window
+            .fetch('/upload/img', { method: 'post', body: fd })
+            .then((res) => res.json())
+            .then((res) => {
+              console.log(res);
+              if (res.status === 0) {
+                alert('上传成功');
+                srcs = [];
+                urls = [];
+                upload.value = ''
+                imgBox.innerHTML = '';
+              } else {
+                alert(res.msg);
+              }
+            });
+        });
+      };
+
+      // 存储数据，为接口发送做准备
+      function changepic(file, isFromUrl) {
+        let newsrc = '';
+        if (!isFromUrl) {
+          newsrc = getObjectURL(file);
+          srcs.push(file);
+        } else {
+          newsrc = file;
+          urls.push(newsrc);
+        }
+        const imgDom = document.createElement('img');
+        imgDom.className = 'show';
+        imgDom.src = newsrc;
+        imgBox.appendChild(imgDom);
+      }
+
+      //建立一個可存取到該file的url
+      function getObjectURL(file) {
+        var url = null;
+        // 下面函数执行的效果是一样的，只是需要针对不同的浏览器执行不同的 js 函数而已
+        if (window.createObjectURL != undefined) {
+          // basic
+          url = window.createObjectURL(file);
+        } else if (window.URL != undefined) {
+          // mozilla(firefox)
+          url = window.URL.createObjectURL(file);
+        } else if (window.webkitURL != undefined) {
+          // webkit or chrome
+          url = window.webkitURL.createObjectURL(file);
+        }
+        return url;
+      }
+
+      // 校验图片是否存在
+      function checkImgExists(imgurl) {
+        return new Promise(function (resolve) {
+          var ImgObj = new Image();
+          ImgObj.src = imgurl;
+          ImgObj.onload = () => {
+            resolve(imgurl);
+          };
+          ImgObj.onerror = (err) => {
+            console.log(err, 'err');
+            resolve(false);
+          };
+        });
+      }
+
+      // 将base64转换为文件
+      function dataURLtoFile(dataurl, filename) {
+        if (!dataurl) {
+          return null;
+        }
+        let arr = dataurl.split(',');
+        let mime = arr[0].match(/:(.*?);/)[1];
+        let bstr = atob(arr[1]);
+        let n = bstr.length;
+        let u8arr = new Uint8Array(n);
+        while (n--) {
+          u8arr[n] = bstr.charCodeAt(n);
+        }
+        return new File([u8arr], filename, { type: mime });
+      }
+    </script>
+  </body>
+</html>

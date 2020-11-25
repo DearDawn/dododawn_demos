@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>滚动</title>
+  </head>
+  <style>
+    body {
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+    }
+
+    .content {
+      width: 700px;
+      margin-bottom: 20px;
+    }
+
+    .container {
+      width: 900px;
+      background-color: #f5f5f5;
+      overflow: auto;
+      margin-left: -200px;
+      padding-left: 200px;
+      box-sizing: border-box;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    }
+    .scroll-body {
+      height: 300px;
+      width: 1800px;
+      margin: 20px 0;
+      background-color: #eee;
+      box-shadow: 2px 2px 5px rgba(0, 0, 0, 0.7);
+    }
+    .container::-webkit-scrollbar {
+      width: 16px;
+      height: 16px;
+    }
+    .container::-webkit-scrollbar-track {
+      border-radius: 10px;
+      margin-left: 200px;
+      background-color: #ddd;
+    }
+    .container::-webkit-scrollbar-thumb {
+      height: 20px;
+      border-radius: 10px;
+      background-color: #aaa;
+    }
+  </style>
+  <body>
+    <div class="content">
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit.
+      Obcaecati repellat commodi eveniet maxime cumque vitae laudantium, ab enim
+      facere iste amet, consectetur omnis! Quos laborum hic dolores. Quod, quae
+      facere.
+    </div>
+    <div class="container">
+      <div class="scroll-body"></div>
+    </div>
+  </body>
+</html>
