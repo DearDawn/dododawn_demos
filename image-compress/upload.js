@@ -36,8 +36,8 @@ router.post('/img', upload.array('files'), (req, res) => {
                     // 压缩图片
                     compress(finalPath).then(r => {
                         if (r) {
-                            pathArr.origin.push(req.headers.host + '/img/' + keepName)
-                            pathArr.compress.push(req.headers.host + '/img-compress/' + keepName)
+                            pathArr.origin.push('http://' + req.headers.host + '/img/' + keepName)
+                            pathArr.compress.push('http://' + req.headers.host + '/img-compress/' + keepName)
                             resolve(true)
                         }
                         resolve(false)
@@ -69,8 +69,8 @@ router.post('/img', upload.array('files'), (req, res) => {
                             // 压缩图片
                             compress(finalPath).then(r => {
                                 if (r) {
-                                    pathArr.origin.push(req.headers.host + '/img/' + res.keepName)
-                                    pathArr.compress.push(req.headers.host + '/img-compress/' + res.keepName)
+                                    pathArr.origin.push('http://' + req.headers.host + '/img/' + res.keepName)
+                                    pathArr.compress.push('http://' + req.headers.host + '/img-compress/' + res.keepName)
                                     return resolve(true)
                                 }
                                 resolve(false)
