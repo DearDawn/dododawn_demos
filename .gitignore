@@ -3,3 +3,4 @@ node_modules/
 .vscode/
 static/img-compress/
 static/img/
+uploads/
