@@ -6,9 +6,9 @@ const router = express.Router();
 const compress = require('./compress')
 const downloadFromUrl = require('./download.js');
 
-multer({ dest: '../static/img/' })
-multer({ dest: '../static/img-compress/' })
-const upload = multer({ dest: './uploads/' })
+multer({ dest: path.join(__dirname, '../static/img/') })
+multer({ dest: path.join(__dirname, '../static/img-compress/') })
+const upload = multer({ dest: path.join(__dirname, './uploads/') })
 
 //图片上传必须用post方法
 router.post('/img', upload.array('files'), (req, res) => {
