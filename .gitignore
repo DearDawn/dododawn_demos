@@ -4,3 +4,5 @@ node_modules/
 static/img-compress/
 static/img/
 uploads/
+*.m4a
+*.png
