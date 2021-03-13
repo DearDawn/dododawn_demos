@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="shortcut icon" href="./favicon.ico" type="image/x-icon" />
+    <title>音准测试</title>
+  </head>
+  <body>
+    <style>
+      .container {
+        display: flex;
+        height: 500px;
+        align-items: flex-end;
+      }
+      .box {
+        width: 20px;
+        height: 255px;
+        background-color: antiquewhite;
+        margin-right: 10px;
+        transform-origin: bottom;
+        transform: scaleY(0.01);
+      }
+      .box.ruler {
+        background-color: aquamarine;
+      }
+    </style>
+    音准测试～快来玩！
+    <button id="stop">停止</button>
+    <button id="start">开始</button>
+    <div class="container">
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box"></div>
+      <div class="box ruler"></div>
+    </div>
+  </body>
+  <script>
+    console.log('hello world');
+  </script>
+  <script src="./index.js"></script>
+</html>
