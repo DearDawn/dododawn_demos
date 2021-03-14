@@ -5,8 +5,8 @@ const WebSocket = require('ws');
 const writeLog = require('./write-log');
 
 const server = https.createServer({
-    key: fs.readFileSync(path.join("../../ssl/Nginx/2_www.dododawn.com.key")),
-    cert: fs.readFileSync(path.join("../../ssl/Nginx/1_www.dododawn.com_bundle.crt"))
+    key: fs.readFileSync(path.join(__dirname, "../../ssl/Nginx/2_www.dododawn.com.key")),
+    cert: fs.readFileSync(path.join(__dirname, "../../ssl/Nginx/1_www.dododawn.com_bundle.crt"))
 });
 
 const wss = new WebSocket.Server({ server });
