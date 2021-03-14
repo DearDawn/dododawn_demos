@@ -112,6 +112,7 @@ const receiveMes = (client, message) => {
 
 // 收到一个客户端的连接
 wss.on('connection', function (ws) {
+    console.log('收到连接');
     // 人数达到上限就关闭连接
     if (clients.length >= MAX_CONNS) {
         ws.close(3001, '连接爆满啦～')
