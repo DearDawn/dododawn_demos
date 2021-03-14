@@ -1,9 +1,16 @@
+var https = require('https');
+var fs = require('fs');
 const WebSocket = require('ws');
 const writeLog = require('./write-log');
 
-const wss = new WebSocket.Server({
-    port: 7777
+const server = https.createServer({
+    key: fs.readFileSync("../../../ssl/Nginx/2_www.dododawn.com.key"),
+    cert: fs.readFileSync("../../../ssl/Nginx/1_www.dododawn.com_bundle.crt")
 });
+
+const wss = new WebSocket.Server({ server });
+
+server.listen(7777)
 
 // 连接的客户端集合
 const clients = []
