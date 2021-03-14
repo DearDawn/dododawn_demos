@@ -1,3 +1,6 @@
+var fs = require('fs');
+var https = require('https');
+
 const DOM = {
     myInfo: document.querySelector('#my-info'),
     message: document.querySelector('#message'),
@@ -6,9 +9,18 @@ const DOM = {
     onlineList: document.querySelector('#left')
 }
 
+const server = https.createServer({
+    key: fs.readFileSync("./ssl/Nginx/2_www.dododawn.com.key"),
+    cert: fs.readFileSync("./ssl/Nginx/1_www.dododawn.com_bundle.crt")
+});
+
+const ws = new WebSocket.Server({ server });
+
+server.listen(7777)
+
 // 建立 webSocket 连接
 // const ws = new WebSocket("ws://localhost:7777");
-const ws = new WebSocket("ws://www.dododawn.com:7777");
+// const ws = new WebSocket("ws://122.51.49.61:7777");
 
 // 页面关闭时自动断开连接
 window.onbeforeunload = () => {
@@ -127,7 +139,7 @@ function handleChat(resData, isMe) {
     const message = resData.message
 
 
-    const dateStr = dateFormat(date,'mm-dd HH:MM:SS')
+    const dateStr = dateFormat(date, 'mm-dd HH:MM:SS')
 
     const card = initChatCard(
         decodeURIComponent(info.name),
