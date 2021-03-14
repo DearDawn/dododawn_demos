@@ -10,8 +10,8 @@ const fs = require('fs');
 https.createServer({
   key: fs.readFileSync(path.join(__dirname, "../ssl/Nginx/2_www.dododawn.com.key")),
   cert: fs.readFileSync(path.join(__dirname, "../ssl/Nginx/1_www.dododawn.com_bundle.crt"))
-}, app).listen(10, () => {
-  console.log("图片上传服务器开启，端口: 10")
+}, app).listen(7000, () => {
+  console.log("图片上传服务器开启，端口: 7000")
 });
 
 app.use(cors())
