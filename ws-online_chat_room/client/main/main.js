@@ -8,7 +8,7 @@ const DOM = {
 
 // 建立 webSocket 连接
 // const ws = new WebSocket("ws://localhost:7777");
-const ws = new WebSocket("wss://122.51.49.61:7777");
+const ws = new WebSocket("wss://www.dododawn.com:7777");
 
 // 页面关闭时自动断开连接
 window.onbeforeunload = () => {
