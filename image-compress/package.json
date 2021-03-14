@@ -3,6 +3,7 @@
     "body-parser": "^1.19.0",
     "cors": "^2.8.5",
     "express": "^4.17.1",
+    "images": "^3.2.3",
     "multer": "^1.4.2",
     "utility": "^1.16.3"
   }
