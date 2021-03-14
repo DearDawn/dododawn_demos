@@ -6,6 +6,7 @@ const path = require('path')
 const upload = require('./upload.js');
 const https = require('https');
 const fs = require('fs');
+const path = require('path')
 
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -15,8 +16,8 @@ app.use(express.static(path.normalize(path.join(__dirname, "../static"))))
 app.use('/upload', upload)
 
 https.createServer({
-  key: fs.readFileSync("../ssl/Nginx/2_www.dododawn.com.key"),
-  cert: fs.readFileSync("../ssl/Nginx/1_www.dododawn.com_bundle.crt")
+  key: fs.readFileSync(path.join(__dirname, "../ssl/Nginx/2_www.dododawn.com.key")),
+  cert: fs.readFileSync(path.join(__dirname, "../ssl/Nginx/1_www.dododawn.com_bundle.crt"))
 }, app).listen(10, () => {
   console.log("图片上传服务器开启，端口: 10")
 });
