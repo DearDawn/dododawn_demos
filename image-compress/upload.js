@@ -3,7 +3,7 @@ const multer = require('multer');
 const fs = require('fs')
 const path = require('path');
 const router = express.Router();
-const compress = require('./compress')
+const compress = require('./compress-old')
 const downloadFromUrl = require('./download.js');
 
 multer({ dest: path.join(__dirname, '../static/img/') })
@@ -34,14 +34,13 @@ router.post('/img', upload.array('files'), (req, res) => {
                         }
                     })
                     // 压缩图片
-                    compress(finalPath).then(r => {
-                        if (r) {
-                            pathArr.origin.push('http://' + req.headers.host + '/img/' + keepName)
-                            pathArr.compress.push('http://' + req.headers.host + '/img-compress/' + keepName)
-                            resolve(true)
-                        }
-                        resolve(false)
-                    })
+                    const ans = compress(finalPath)
+                    if (ans) {
+                        pathArr.origin.push('http://' + req.headers.host + '/img/' + keepName)
+                        pathArr.compress.push('http://' + req.headers.host + '/img-compress/' + keepName)
+                        resolve(true)
+                    }
+                    resolve(false)
                 });
             }))
         })
@@ -66,15 +65,13 @@ router.post('/img', upload.array('files'), (req, res) => {
                                     return resolve('删除失败');
                                 }
                             })
-                            // 压缩图片
-                            compress(finalPath).then(r => {
-                                if (r) {
-                                    pathArr.origin.push('http://' + req.headers.host + '/img/' + res.keepName)
-                                    pathArr.compress.push('http://' + req.headers.host + '/img-compress/' + res.keepName)
-                                    return resolve(true)
-                                }
-                                resolve(false)
-                            })
+                            const ans = compress(finalPath)
+                            if (ans) {
+                                pathArr.origin.push('http://' + req.headers.host + '/img/' + res.keepName)
+                                pathArr.compress.push('http://' + req.headers.host + '/img-compress/' + res.keepName)
+                                return resolve(true)
+                            }
+                            resolve(false)
                         });
                     })
                 })
