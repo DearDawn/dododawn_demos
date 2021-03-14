@@ -6,7 +6,6 @@ const path = require('path')
 const upload = require('./upload.js');
 const https = require('https');
 const fs = require('fs');
-const path = require('path')
 
 app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }))
