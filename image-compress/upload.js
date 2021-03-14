@@ -3,7 +3,7 @@ const multer = require('multer');
 const fs = require('fs')
 const path = require('path');
 const router = express.Router();
-const compress = require('./compress-old')
+const compress = require('./compress')
 const downloadFromUrl = require('./download.js');
 
 multer({ dest: path.join(__dirname, '../static/img/') })
